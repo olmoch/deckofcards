@@ -5,6 +5,7 @@ import static java.util.UUID.randomUUID;
 
 import ch.olmo.deckofcards.domain.entities.Card;
 import ch.olmo.deckofcards.domain.entities.Game;
+import ch.olmo.deckofcards.domain.exception.GameNotFoundException;
 import ch.olmo.deckofcards.domain.repository.GameRepository;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -14,11 +15,11 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class CroupierServiceImpl implements CroupierService {
   private final GameRepository gameRepository;
-  private final PokerDeckFactory pokerDeckFactory;
+  private final DeckFactory deckFactory;
 
   @Override
   public Game startGame() {
-    Game game = new Game(randomUUID(), pokerDeckFactory.createDeck());
+    Game game = new Game(randomUUID(), deckFactory.createDeck());
     gameRepository.save(game);
 
     return game;
@@ -26,19 +27,22 @@ public class CroupierServiceImpl implements CroupierService {
 
   @Override
   public Game getGame(UUID tableId) {
-    return gameRepository.retrieve(tableId);
+    return gameRepository.retrieve(tableId)
+        .orElseThrow(GameNotFoundException::new);
   }
 
   @Override
   public void shuffle(UUID tableId) {
-    Game game = gameRepository.retrieve(tableId);
+    Game game = gameRepository.retrieve(tableId)
+        .orElseThrow(GameNotFoundException::new);
     game.getDeck().shuffle();
     game.addToHistory("shuffled");
   }
 
   @Override
   public Card deal(UUID tableId) {
-    Game game = gameRepository.retrieve(tableId);
+    Game game = gameRepository.retrieve(tableId)
+        .orElseThrow(GameNotFoundException::new);
     Card card = game.getDeck().dealOneCard();
     game.addToHistory(format("dealt %s of %s", card.rank().getValue(), card.suit().getName()));
     return card;

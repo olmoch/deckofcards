@@ -1,9 +1,9 @@
 package ch.olmo.deckofcards.domain.service;
 
-import ch.olmo.deckofcards.domain.entities.Deck;
 import ch.olmo.deckofcards.domain.entities.Card;
-import ch.olmo.deckofcards.domain.entities.Suit;
+import ch.olmo.deckofcards.domain.entities.Deck;
 import ch.olmo.deckofcards.domain.entities.Rank;
+import ch.olmo.deckofcards.domain.entities.Suit;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
