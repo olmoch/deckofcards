@@ -20,7 +20,7 @@ import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ERROR)
-public abstract class GameMapper {
+public abstract class DbGameMapper {
   @Autowired
   DeckFactory deckFactory;
 

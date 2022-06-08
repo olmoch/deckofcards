@@ -26,25 +26,27 @@ public class CroupierServiceImpl implements CroupierService {
   }
 
   @Override
-  public Game getGame(UUID tableId) {
-    return gameRepository.retrieve(tableId)
+  public Game getGame(UUID id) {
+    return gameRepository.retrieve(id)
         .orElseThrow(GameNotFoundException::new);
   }
 
   @Override
-  public void shuffle(UUID tableId) {
-    Game game = gameRepository.retrieve(tableId)
+  public void shuffle(UUID id) {
+    Game game = gameRepository.retrieve(id)
         .orElseThrow(GameNotFoundException::new);
     game.getDeck().shuffle();
     game.addToHistory("shuffled");
+    gameRepository.save(game);
   }
 
   @Override
-  public Card deal(UUID tableId) {
-    Game game = gameRepository.retrieve(tableId)
+  public Card deal(UUID id) {
+    Game game = gameRepository.retrieve(id)
         .orElseThrow(GameNotFoundException::new);
     Card card = game.getDeck().dealOneCard();
     game.addToHistory(format("dealt %s of %s", card.rank().getValue(), card.suit().getName()));
+    gameRepository.save(game);
     return card;
   }
 }

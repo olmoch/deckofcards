@@ -9,7 +9,7 @@ import ch.olmo.deckofcards.domain.entities.Deck;
 import ch.olmo.deckofcards.domain.entities.Game;
 import ch.olmo.deckofcards.domain.repository.GameRepository;
 import ch.olmo.deckofcards.infrastructure.dto.GameDto;
-import ch.olmo.deckofcards.infrastructure.mappers.GameMapper;
+import ch.olmo.deckofcards.infrastructure.mappers.DbGameMapper;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,13 +21,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class InMemoryGameRepositoryTest {
   @Mock
-  private GameMapper gameMapper;
+  private DbGameMapper dbGameMapper;
 
   private GameRepository gameRepository;
 
   @BeforeEach
   void beforeEach() {
-    this.gameRepository = new InMemoryGameRepository(gameMapper);
+    this.gameRepository = new InMemoryGameRepository(dbGameMapper);
   }
 
   @Test
@@ -38,8 +38,8 @@ class InMemoryGameRepositoryTest {
 
     GameDto gameDto = GameDto.builder().build();
 
-    willReturn(gameDto).given(gameMapper).toGameDto(game);
-    willReturn(game).given(gameMapper).toGame(gameDto, id);
+    willReturn(gameDto).given(dbGameMapper).toGameDto(game);
+    willReturn(game).given(dbGameMapper).toGame(gameDto, id);
 
     // when
     gameRepository.save(game);

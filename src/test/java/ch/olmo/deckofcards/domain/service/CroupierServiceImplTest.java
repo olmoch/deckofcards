@@ -10,6 +10,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
 import ch.olmo.deckofcards.domain.entities.Card;
@@ -22,6 +23,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -97,8 +99,11 @@ class CroupierServiceImplTest {
     croupierService.shuffle(id);
 
     // then
-    then(gameRepository).should().retrieve(id);
-    then(deck).should().shuffle();
+    InOrder inOrder = inOrder(gameRepository, deck);
+    then(gameRepository).should(inOrder).retrieve(id);
+    then(deck).should(inOrder).shuffle();
+    then(gameRepository).should(inOrder).save(game);
+    inOrder.verifyNoMoreInteractions();
   }
 
   @Test
@@ -117,7 +122,7 @@ class CroupierServiceImplTest {
   }
 
   @Test
-  void givenACroupier_whenDealing_thenItShouldRetrieveGameFromTheRepositoryAndDealOneCard() {
+  void givenACroupier_whenDealing_thenItShouldRetrieveGameFromTheRepositoryAndDealOneCardAndSave() {
     // given
     UUID id = randomUUID();
     Deck deck = mock(Deck.class);
@@ -130,8 +135,12 @@ class CroupierServiceImplTest {
     Card dealtCard = croupierService.deal(id);
 
     // then
-    then(gameRepository).should().retrieve(id);
-    then(deck).should().dealOneCard();
+    InOrder inOrder = inOrder(gameRepository, deck);
+    then(gameRepository).should(inOrder).retrieve(id);
+    then(deck).should(inOrder).dealOneCard();
+    then(gameRepository).should(inOrder).save(game);
+    inOrder.verifyNoMoreInteractions();
+
     assertThat(dealtCard).isEqualTo(new Card(SPADES, ACE));
   }
 

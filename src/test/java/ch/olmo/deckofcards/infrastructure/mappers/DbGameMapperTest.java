@@ -10,19 +10,19 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class GameMapperTest {
-  private GameMapper gameMapper;
+class DbGameMapperTest {
+  private DbGameMapper dbGameMapper;
 
   @BeforeEach
   void beforeEach() {
-    this.gameMapper = new GameMapperImpl();
+    this.dbGameMapper = new DbGameMapperImpl();
   }
 
   @ParameterizedTest
   @MethodSource
   void givenASuitName_whenMappingToSuit_thenItShouldMapCorrectly(Suit suit, String name) {
     // when
-    Suit mapped = gameMapper.toSuit(name);
+    Suit mapped = dbGameMapper.toSuit(name);
 
     // then
     assertThat(mapped).isEqualTo(suit);
@@ -37,7 +37,7 @@ class GameMapperTest {
   @MethodSource
   void givenARankName_whenMappingToRank_thenItShouldMapCorrectly(Rank rank, int value) {
     // when
-    Rank mapped = gameMapper.toRank(value);
+    Rank mapped = dbGameMapper.toRank(value);
 
     // then
     assertThat(mapped).isEqualTo(rank);

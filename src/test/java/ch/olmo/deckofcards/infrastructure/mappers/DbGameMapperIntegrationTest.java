@@ -18,9 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = DeckOfCardsApplication.class)
-class GameMapperIntegrationTest {
+class DbGameMapperIntegrationTest {
   @Autowired
-  private GameMapper gameMapper;
+  private DbGameMapper dbGameMapper;
 
   @Test
   void givenAGame_whenMapping_thenItShouldReturnGameDto() {
@@ -29,7 +29,7 @@ class GameMapperIntegrationTest {
     game.addToHistory("entry");
 
     // when
-    GameDto gameDto = gameMapper.toGameDto(game);
+    GameDto gameDto = dbGameMapper.toGameDto(game);
 
     // then
     assertThat(gameDto.getHistory()).containsExactly("entry");
@@ -48,7 +48,7 @@ class GameMapperIntegrationTest {
     UUID id = randomUUID();
 
     // when
-    Game game = gameMapper.toGame(gameDto, id);
+    Game game = dbGameMapper.toGame(gameDto, id);
 
     // then
     assertThat(game.getId()).isEqualTo(id);
@@ -63,7 +63,7 @@ class GameMapperIntegrationTest {
     GameDto gameDto = GameDto.builder().cards(singletonList(cardDto)).build();
 
     // when
-    Deck mapped = gameMapper.toDeck(gameDto);
+    Deck mapped = dbGameMapper.toDeck(gameDto);
 
     // then
     assertThat(mapped.getCards()).containsExactly(new Card(SPADES, ACE));
