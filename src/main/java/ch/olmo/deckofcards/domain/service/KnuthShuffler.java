@@ -3,7 +3,6 @@ package ch.olmo.deckofcards.domain.service;
 import static java.util.stream.IntStream.range;
 import static org.springframework.util.Assert.notNull;
 
-import ch.olmo.deckofcards.domain.entities.Card;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
- * A {@link DeckShuffler} implementation that uses the Knuth shuffle.
+ * A {@link Shuffler} implementation that uses the Knuth shuffle.
  */
 @Component
 @RequiredArgsConstructor
-public class KnuthDeckShuffler implements DeckShuffler {
+public class KnuthShuffler implements Shuffler {
   private final SecureRandom random;
 
   /**
@@ -23,14 +22,14 @@ public class KnuthDeckShuffler implements DeckShuffler {
    * {@link UnsupportedOperationException} modifying the input list, a new {@link ArrayList} will
    * be created.
    *
-   * @param deck a non-null {@link List} of {@link Card}s
+   * @param deck a non-null {@link List} of {@link Object}s
    * @return the shuffled list
    */
   @Override
-  public <C extends Card> List<C> shuffle(List<C> deck) {
+  public <T> List<T> shuffle(List<T> deck) {
     notNull(deck, "The deck cannot be null");
 
-    ArrayList<C> shuffled = new ArrayList<>(deck);
+    ArrayList<T> shuffled = new ArrayList<>(deck);
 
     int size = shuffled.size();
 
@@ -38,8 +37,8 @@ public class KnuthDeckShuffler implements DeckShuffler {
         .forEachOrdered(firstIndex -> {
           int exchangeIndex = random.nextInt(firstIndex, size);
 
-          C firstCard = shuffled.get(firstIndex);
-          C exchangeCard = shuffled.get(exchangeIndex);
+          T firstCard = shuffled.get(firstIndex);
+          T exchangeCard = shuffled.get(exchangeIndex);
 
           shuffled.set(firstIndex, exchangeCard);
           shuffled.set(exchangeIndex, firstCard);

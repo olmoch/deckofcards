@@ -1,6 +1,3 @@
 package ch.olmo.deckofcards.domain.entities;
 
-public interface Card {
-  String getSuit();
-  int getValue();
-}
+public record Card(Suit suit, Rank rank) { }

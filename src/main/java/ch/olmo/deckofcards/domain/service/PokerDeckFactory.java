@@ -1,27 +1,40 @@
 package ch.olmo.deckofcards.domain.service;
 
-import ch.olmo.deckofcards.domain.entities.poker.PokerCard;
-import ch.olmo.deckofcards.domain.entities.poker.Suit;
-import ch.olmo.deckofcards.domain.entities.poker.Rank;
+import ch.olmo.deckofcards.domain.entities.Deck;
+import ch.olmo.deckofcards.domain.entities.Card;
+import ch.olmo.deckofcards.domain.entities.Suit;
+import ch.olmo.deckofcards.domain.entities.Rank;
 import java.util.List;
 import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
- * A {@link DeckFactory} that returns the full list of all 52 {@link PokerCard}s.
+ * A {@link DeckFactory} that returns the full list of all 52 {@link Card}s.
  */
 @Component
-public class PokerDeckFactory implements DeckFactory<PokerCard> {
+@RequiredArgsConstructor
+public class PokerDeckFactory implements DeckFactory {
+  private final Shuffler shuffler;
 
   @Override
-  public List<PokerCard> createDeck() {
+  public Deck createDeck() {
+    return createDeck(getPokerCards());
+  }
+
+  @Override
+  public Deck createDeck(List<Card> cards) {
+    return new Deck(shuffler, cards);
+  }
+
+  public static List<Card> getPokerCards() {
     return Stream.of(Suit.values())
-        .flatMap(this::createFor)
+        .flatMap(PokerDeckFactory::createFor)
         .toList();
   }
 
-  private Stream<PokerCard> createFor(Suit suit) {
+  private static Stream<Card> createFor(Suit suit) {
     return Stream.of(Rank.values())
-        .map(value -> new PokerCard(suit, value));
+        .map(value -> new Card(suit, value));
   }
 }

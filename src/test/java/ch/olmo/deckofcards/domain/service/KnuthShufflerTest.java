@@ -1,32 +1,32 @@
 package ch.olmo.deckofcards.domain.service;
 
-import static ch.olmo.deckofcards.domain.entities.poker.Suit.DIAMONDS;
-import static ch.olmo.deckofcards.domain.entities.poker.Suit.HEARTS;
-import static ch.olmo.deckofcards.domain.entities.poker.Suit.SPADES;
-import static ch.olmo.deckofcards.domain.entities.poker.Rank.ACE;
-import static ch.olmo.deckofcards.domain.entities.poker.Rank.JACK;
-import static ch.olmo.deckofcards.domain.entities.poker.Rank.QUEEN;
+import static ch.olmo.deckofcards.domain.entities.Suit.DIAMONDS;
+import static ch.olmo.deckofcards.domain.entities.Suit.HEARTS;
+import static ch.olmo.deckofcards.domain.entities.Suit.SPADES;
+import static ch.olmo.deckofcards.domain.entities.Rank.ACE;
+import static ch.olmo.deckofcards.domain.entities.Rank.JACK;
+import static ch.olmo.deckofcards.domain.entities.Rank.QUEEN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
 
-import ch.olmo.deckofcards.domain.entities.poker.PokerCard;
+import ch.olmo.deckofcards.domain.entities.Card;
 import java.security.SecureRandom;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class KnuthDeckShufflerTest {
+class KnuthShufflerTest {
   private SecureRandom random;
-  private KnuthDeckShuffler deckShuffler;
+  private KnuthShuffler deckShuffler;
 
   @BeforeEach
   void beforeEach() {
     this.random = mock(SecureRandom.class, withSettings().withoutAnnotations());
-    this.deckShuffler = new KnuthDeckShuffler(random);
+    this.deckShuffler = new KnuthShuffler(random);
   }
 
   @Test
@@ -42,14 +42,14 @@ class KnuthDeckShufflerTest {
   @Test
   void givenAShuffler_whenShufflingADeck_thenItShouldReturnAListWithShuffledCards() {
     // given
-    PokerCard card1 = new PokerCard(SPADES, ACE);
-    PokerCard card2 = new PokerCard(DIAMONDS, JACK);
-    PokerCard card3 = new PokerCard(HEARTS, QUEEN);
+    Card card1 = new Card(SPADES, ACE);
+    Card card2 = new Card(DIAMONDS, JACK);
+    Card card3 = new Card(HEARTS, QUEEN);
 
     willReturn(1, 2).given(random).nextInt(anyInt(), anyInt());
 
     // when
-    List<ch.olmo.deckofcards.domain.entities.Card> shuffled = deckShuffler.shuffle(List.of(card1, card2, card3));
+    List<Card> shuffled = deckShuffler.shuffle(List.of(card1, card2, card3));
 
     // then
     assertThat(shuffled).containsExactly(card2, card3, card1);

@@ -1,4 +1,4 @@
-package ch.olmo.deckofcards.domain.entities.poker;
+package ch.olmo.deckofcards.domain.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

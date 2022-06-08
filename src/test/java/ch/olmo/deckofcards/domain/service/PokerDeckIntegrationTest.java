@@ -5,53 +5,51 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import ch.olmo.deckofcards.boot.DeckOfCardsApplication;
-import ch.olmo.deckofcards.domain.entities.poker.PokerCard;
+import ch.olmo.deckofcards.domain.entities.Deck;
+import ch.olmo.deckofcards.domain.entities.Card;
 import ch.olmo.deckofcards.domain.exception.NoCardsRemainingException;
 import java.util.List;
-import java.util.stream.IntStream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = DeckOfCardsApplication.class)
-class PokerDealerIntegrationTest {
-  private static final int POKER_DECK_SIZE = 52;
+class PokerDeckIntegrationTest {
+  private static final List<Card> POKER_DECK_CARDS = PokerDeckFactory.getPokerCards();
+  private static final int POKER_DECK_SIZE = POKER_DECK_CARDS.size();
 
   @Autowired
-  DeckFactory<PokerCard> pokerDeckFactory;
+  private DeckFactory pokerDeckFactory;
 
-  @Autowired
-  DealerFactory dealerFactory;
+  private Deck pokerDeck;
+
+  @BeforeEach
+  void beforeEach() {
+    this.pokerDeck = pokerDeckFactory.createDeck();
+  }
 
   @Test
   void givenAPokerDeck_whenDealing52Cards_thenWeShouldReceiveAllCards() {
-    // given
-    List<PokerCard> pokerDeck = pokerDeckFactory.createDeck();
-    Dealer<PokerCard> dealer = dealerFactory.create(pokerDeck);
-
     // when
-    List<PokerCard> dealtCards = range(0, POKER_DECK_SIZE)
+    List<Card> dealtCards = range(0, POKER_DECK_SIZE)
         .boxed()
-        .map(i -> dealer.dealOneCard())
+        .map(i -> pokerDeck.dealOneCard())
         .toList();
 
     // then
     assertThat(dealtCards).hasSize(POKER_DECK_SIZE)
         .doesNotHaveDuplicates()
-        .containsExactlyElementsOf(pokerDeck);
+        .containsExactlyElementsOf(POKER_DECK_CARDS);
   }
 
   @Test
   void givenAPokerDeck_whenDealing53Cards_thenItShouldThrowANoCardsRemainingException() {
-    // given
-    List<PokerCard> pokerDeck = pokerDeckFactory.createDeck();
-    Dealer<PokerCard> dealer = dealerFactory.create(pokerDeck);
-
     // when
     range(0, POKER_DECK_SIZE)
-        .forEach(i -> dealer.dealOneCard());
+        .forEach(i -> pokerDeck.dealOneCard());
 
-    Throwable throwable = catchThrowable(dealer::dealOneCard);
+    Throwable throwable = catchThrowable(pokerDeck::dealOneCard);
 
     // then
     assertThat(throwable).isInstanceOf(NoCardsRemainingException.class);
@@ -62,20 +60,16 @@ class PokerDealerIntegrationTest {
    */
   @Test
   void givenAPokerDeck_whenShufflingThenDealing52Cards_thenItShouldReturnDeckInADifferentOrder() {
-    // given
-    List<PokerCard> pokerDeck = pokerDeckFactory.createDeck();
-    Dealer<PokerCard> dealer = dealerFactory.create(pokerDeck);
-
     // when
-    dealer.shuffle();
-    List<PokerCard> dealtCards = range(0, POKER_DECK_SIZE)
+    pokerDeck.shuffle();
+    List<Card> dealtCards = range(0, POKER_DECK_SIZE)
         .boxed()
-        .map(i -> dealer.dealOneCard())
+        .map(i -> pokerDeck.dealOneCard())
         .toList();
 
     // then
     assertThat(dealtCards).hasSize(POKER_DECK_SIZE)
-        .containsExactlyInAnyOrderElementsOf(pokerDeck)
-        .doesNotContainSequence(pokerDeck);
+        .containsExactlyInAnyOrderElementsOf(POKER_DECK_CARDS)
+        .doesNotContainSequence(POKER_DECK_CARDS);
   }
 }
